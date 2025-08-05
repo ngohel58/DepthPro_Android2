@@ -36,12 +36,11 @@ public class ChromostereopsisProcessor {
         int originalWidth = original.getWidth();
         int originalHeight = original.getHeight();
 
-        // Resize depth map using exact Python method
+        // Depth map is already aligned with original dimensions
         double[][] depthMapDouble = convertToDouble(depthMap);
-        double[][] resizedDepth = resizeDepthMapPythonExact(depthMapDouble, originalWidth, originalHeight);
 
         // Apply smoothing exactly like Python bilateral filter
-        double[][] smoothedDepth = applyPythonSmoothing(resizedDepth, params.smoothing);
+        double[][] smoothedDepth = applyPythonSmoothing(depthMapDouble, params.smoothing);
 
         // Convert original to grayscale exactly like Python PIL
         double[] grayDouble = convertToGrayscalePythonExact(original);
