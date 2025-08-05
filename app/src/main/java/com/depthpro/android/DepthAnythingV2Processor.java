@@ -97,14 +97,16 @@ public class DepthAnythingV2Processor {
                 byte[] buffer = new byte[8192];
                 int bytesRead;
                 long totalBytes = 0;
+                long nextLogThreshold = 50L * 1024 * 1024; // 50MB
 
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
                     outputStream.write(buffer, 0, bytesRead);
                     totalBytes += bytesRead;
 
-                    // Log progress every 50MB
-                    if (totalBytes % (50 * 1024 * 1024) == 0) {
+                    // Log progress every 50MB of data copied
+                    if (totalBytes >= nextLogThreshold) {
                         Log.d(TAG, "Copied " + (totalBytes / (1024 * 1024)) + " MB");
+                        nextLogThreshold += 50L * 1024 * 1024;
                     }
                 }
 
