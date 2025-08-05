@@ -138,19 +138,20 @@ public class DepthAnythingV2Processor {
 
         float[][][] preprocessedImage = preprocessImageForDepthAnything(resizedBitmap);
 
-        // Convert to tensor format (1, 3, H, W)
-        float[][][][] tensorData = new float[1][CHANNELS][INPUT_HEIGHT][INPUT_WIDTH];
+        // Convert to FloatBuffer in NCHW format
+        FloatBuffer buffer = FloatBuffer.allocate(CHANNELS * INPUT_HEIGHT * INPUT_WIDTH);
         for (int c = 0; c < CHANNELS; c++) {
             for (int h = 0; h < INPUT_HEIGHT; h++) {
                 for (int w = 0; w < INPUT_WIDTH; w++) {
-                    tensorData[0][c][h][w] = preprocessedImage[h][w][c];
+                    buffer.put(preprocessedImage[h][w][c]);
                 }
             }
         }
+        buffer.rewind();
 
         // Create input tensor
-        long[] inputShape = {1, CHANNELS, INPUT_HEIGHT, INPUT_WIDTH};
-        OnnxTensor inputTensor = OnnxTensor.createTensor(ortEnvironment, tensorData);
+        OnnxTensor inputTensor = OnnxTensor.createTensor(
+                ortEnvironment, buffer, new long[]{1, CHANNELS, INPUT_HEIGHT, INPUT_WIDTH});
 
         // Run inference
         Map<String, OnnxTensor> inputs = Collections.singletonMap(INPUT_NAME, inputTensor);
