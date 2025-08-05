@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromDegrees="0"
+    android:toDegrees="360">
+    <shape
+        android:innerRadius="20dp"
+        android:shape="ring"
+        android:thickness="4dp"
+        android:useLevel="false">
+        <gradient
+            android:endColor="@color/progress_primary"
+            android:startColor="@color/progress_secondary"
+            android:type="sweep" />
+    </shape>
+</rotate>

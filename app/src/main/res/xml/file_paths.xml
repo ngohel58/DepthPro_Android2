@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-files-path name="images" path="Pictures/DepthPro/"/>
+    <external-files-path name="depth_maps" path="DepthMaps/"/>
+    <cache-path name="temp" path="temp/"/>
+    <files-path name="internal" path="images/"/>
+</paths>

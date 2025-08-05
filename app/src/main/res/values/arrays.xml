@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="color_map_names">
+        <item>@string/colormap_grayscale</item>
+        <item>@string/colormap_jet</item>
+        <item>@string/colormap_viridis</item>
+        <item>@string/colormap_plasma</item>
+        <item>@string/colormap_inferno</item>
+    </string-array>
+
+    <string-array name="color_map_values">
+        <item>GRAYSCALE</item>
+        <item>JET</item>
+        <item>VIRIDIS</item>
+        <item>PLASMA</item>
+        <item>INFERNO</item>
+    </string-array>
+
+    <integer-array name="processing_thread_options">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>8</item>
+    </integer-array>
+</resources>

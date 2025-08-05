@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/settings_title"
+        android:key="general_category">
+
+        <ListPreference
+            android:key="color_map"
+            android:title="@string/settings_color_map"
+            android:entries="@array/color_map_names"
+            android:entryValues="@array/color_map_values"
+            android:defaultValue="JET"
+            android:summary="%s" />
+
+        <SeekBarPreference
+            android:key="image_quality"
+            android:title="@string/settings_image_quality"
+            android:max="100"
+            android:min="50"
+            android:defaultValue="90" />
+
+        <SeekBarPreference
+            android:key="processing_threads"
+            android:title="@string/settings_processing_threads"
+            android:max="8"
+            android:min="1"
+            android:defaultValue="4" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="About"
+        android:key="about_category">
+
+        <Preference
+            android:key="about_app"
+            android:title="@string/about_title"
+            android:summary="@string/about_description" />
+
+        <Preference
+            android:key="app_version"
+            android:title="@string/about_version"
+            android:summary="1.0" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

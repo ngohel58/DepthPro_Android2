@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/modern_background"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header -->
+        <TextView
+            android:id="@+id/appTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ChromoStereoizer"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/modern_text_primary"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/selectImageButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Select Image"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/modern_primary"
+                app:cornerRadius="16dp"
+                android:elevation="4dp"
+                app:icon="@drawable/ic_image"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/captureImageButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Capture"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/modern_secondary"
+                app:cornerRadius="16dp"
+                android:elevation="4dp"
+                app:icon="@drawable/ic_camera"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
+
+        </LinearLayout>
+
+        <!-- Generate Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/processButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Generate Depth Map"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/modern_accent"
+            app:cornerRadius="16dp"
+            android:elevation="6dp"
+            android:enabled="false"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Progress Bar -->
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:indicatorColor="@color/modern_accent"
+            app:trackColor="@color/modern_surface"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Status Text -->
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select an image to begin"
+            android:textSize="14sp"
+            android:textColor="@color/modern_text_secondary"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Image Preview Panels -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Original Image Panel -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@color/modern_surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Original Image"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/modern_text_primary"
+                        android:padding="16dp"
+                        android:background="@color/modern_surface_variant" />
+
+                    <ImageView
+                        android:id="@+id/originalImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="200dp"
+                        android:maxHeight="400dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:background="@color/modern_placeholder"
+                        android:contentDescription="Original image"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Depth Map Panel -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@color/modern_surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@color/modern_surface_variant"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Depth Map"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/modern_text_primary"
+                            android:padding="16dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/downloadDepthButton"
+                            style="@style/Widget.Material3.Button.IconButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            app:icon="@drawable/ic_download"
+                            app:iconTint="@color/modern_primary"
+                            android:enabled="false" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/depthMapImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="200dp"
+                        android:maxHeight="400dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:background="@color/modern_placeholder"
+                        android:contentDescription="Depth map"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ChromoStereoizer Panel -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@color/modern_surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@color/modern_surface_variant"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="ChromoStereoizer Result"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/modern_text_primary"
+                            android:padding="16dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/downloadEffectButton"
+                            style="@style/Widget.Material3.Button.IconButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            app:icon="@drawable/ic_download"
+                            app:iconTint="@color/modern_primary"
+                            android:enabled="false" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/chromoImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="200dp"
+                        android:maxHeight="400dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:background="@color/modern_placeholder"
+                        android:contentDescription="ChromoStereoizer effect"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+        <!-- Controls Panel -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@color/modern_surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Controls"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/modern_text_primary"
+                    android:layout_marginBottom="20dp" />
+
+                <!-- Threshold Slider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Threshold (%)"
+                        android:textSize="14sp"
+                        android:textColor="@color/modern_text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/thresholdSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:value="50"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        app:thumbColor="@color/modern_primary"
+                        app:trackColorActive="@color/modern_primary"
+                        app:trackColorInactive="@color/modern_outline" />
+
+                </LinearLayout>
+
+                <!-- Depth Scale Slider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Depth Scale (Steepness)"
+                        android:textSize="14sp"
+                        android:textColor="@color/modern_text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/depthScaleSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:value="50"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        app:thumbColor="@color/modern_primary"
+                        app:trackColorActive="@color/modern_primary"
+                        app:trackColorInactive="@color/modern_outline" />
+
+                </LinearLayout>
+
+                <!-- Feather Slider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Feather (%)"
+                        android:textSize="14sp"
+                        android:textColor="@color/modern_text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/featherSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:value="10"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        app:thumbColor="@color/modern_primary"
+                        app:trackColorActive="@color/modern_primary"
+                        app:trackColorInactive="@color/modern_outline" />
+
+                </LinearLayout>
+
+                <!-- Red Brightness Slider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Red Brightness"
+                        android:textSize="14sp"
+                        android:textColor="@color/modern_text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/redSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:value="50"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        app:thumbColor="@color/modern_primary"
+                        app:trackColorActive="@color/modern_primary"
+                        app:trackColorInactive="@color/modern_outline" />
+
+                </LinearLayout>
+
+                <!-- Blue Brightness Slider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Blue Brightness"
+                        android:textSize="14sp"
+                        android:textColor="@color/modern_text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/blueSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:value="50"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        app:thumbColor="@color/modern_primary"
+                        app:trackColorActive="@color/modern_primary"
+                        app:trackColorInactive="@color/modern_outline" />
+
+                </LinearLayout>
+
+                <!-- Gamma Slider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Gamma"
+                        android:textSize="14sp"
+                        android:textColor="@color/modern_text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/gammaSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:value="50"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        app:thumbColor="@color/modern_primary"
+                        app:trackColorActive="@color/modern_primary"
+                        app:trackColorInactive="@color/modern_outline" />
+
+                </LinearLayout>
+
+                <!-- Black Level Slider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Black Level (%)"
+                        android:textSize="14sp"
+                        android:textColor="@color/modern_text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/blackSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:value="0"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        app:thumbColor="@color/modern_primary"
+                        app:trackColorActive="@color/modern_primary"
+                        app:trackColorInactive="@color/modern_outline" />
+
+                </LinearLayout>
+
+                <!-- White Level Slider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="White Level (%)"
+                        android:textSize="14sp"
+                        android:textColor="@color/modern_text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/whiteSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:value="100"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        app:thumbColor="@color/modern_primary"
+                        app:trackColorActive="@color/modern_primary"
+                        app:trackColorInactive="@color/modern_outline" />
+
+                </LinearLayout>
+
+                <!-- Smoothing Slider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Smoothing (%)"
+                        android:textSize="14sp"
+                        android:textColor="@color/modern_text_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/smoothingSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:value="0"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        app:thumbColor="@color/modern_primary"
+                        app:trackColorActive="@color/modern_primary"
+                        app:trackColorInactive="@color/modern_outline" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Processing Time -->
+        <TextView
+            android:id="@+id/processingTimeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="14sp"
+            android:textColor="@color/modern_text_secondary"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -1,0 +1,114 @@
+<resources>
+    <string name="app_name">Depth Anything V2 Android</string>
+
+    <!-- Button texts -->
+    <string name="select_image">Select Image</string>
+    <string name="capture_image">Capture Photo</string>
+    <string name="generate_depth_map">Generate Depth Map</string>
+
+    <!-- Labels -->
+    <string name="original_image">Original Image</string>
+    <string name="depth_map">Depth Map</string>
+    <string name="chromo_image">Chromo Effect</string>
+    <string name="results">Results</string>
+
+    <!-- Status messages -->
+    <string name="select_image_to_start">Select an image to begin depth estimation</string>
+    <string name="processing_image">Processing image...</string>
+    <string name="processing_complete">Processing completed successfully</string>
+    <string name="processing_failed">Processing failed</string>
+    <string name="model_loading">Loading Depth Anything V2 model...</string>
+    <string name="model_loaded">Model loaded successfully</string>
+    <string name="model_load_failed">Failed to load model</string>
+
+    <!-- Error messages -->
+    <string name="error_no_image">No image selected</string>
+    <string name="error_model_not_loaded">Model not loaded</string>
+    <string name="error_permission_denied">Permission denied</string>
+    <string name="error_camera_not_available">Camera not available</string>
+    <string name="error_image_load_failed">Failed to load image</string>
+    <string name="error_processing_failed">Image processing failed</string>
+
+    <!-- Result labels (removed focal length) -->
+    <string name="processing_time_label">Processing Time: %d ms</string>
+    <string name="image_dimensions_label" formatted="false">Image: %d x %d</string>
+
+    <!-- Footer -->
+    <string name="powered_by">Powered by Depth Anything V2 ONNX</string>
+    <string name="version_info">Version 1.0</string>
+
+    <!-- About -->
+    <string name="about_title">About Depth Anything V2 Android</string>
+    <string name="about_description">This app uses Depth Anything V2 Large model to generate high-quality depth maps from monocular RGB images. The model provides relative depth estimation with superior detail and robustness.</string>
+    <string name="about_model_info">Model: Depth Anything V2 Large ONNX</string>
+    <string name="about_version">Version: 1.0</string>
+    <string name="about_developer">Developed using ONNX Runtime</string>
+
+    <!-- Permissions -->
+    <string name="permission_camera_rationale">Camera permission is needed to capture photos</string>
+    <string name="permission_storage_rationale">Storage permission is needed to save and load images</string>
+    <string name="permissions_required">Permissions required for app functionality</string>
+
+    <!-- Dialog messages -->
+    <string name="dialog_title_error">Error</string>
+    <string name="dialog_title_info">Information</string>
+    <string name="dialog_button_ok">OK</string>
+    <string name="dialog_button_cancel">Cancel</string>
+    <string name="dialog_button_retry">Retry</string>
+
+    <!-- Content descriptions -->
+    <string name="content_desc_original_image">Original input image</string>
+    <string name="content_desc_depth_map">Generated depth map</string>
+    <string name="content_desc_select_image">Select image from gallery</string>
+    <string name="content_desc_capture_image">Capture image with camera</string>
+    <string name="content_desc_process_image">Process image to generate depth map</string>
+
+    <!-- Menu items -->
+    <string name="menu_settings">Settings</string>
+    <string name="menu_about">About</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_save">Save</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_color_map">Color Map</string>
+    <string name="settings_image_quality">Image Quality</string>
+    <string name="settings_processing_threads">Processing Threads</string>
+
+    <!-- Color map options -->
+    <string name="colormap_grayscale">Grayscale</string>
+    <string name="colormap_jet">Jet</string>
+    <string name="colormap_viridis">Viridis</string>
+    <string name="colormap_plasma">Plasma</string>
+    <string name="colormap_inferno">Inferno</string>
+
+    <!-- Help -->
+    <string name="help_title">How to Use</string>
+    <string name="help_step1">1. Select an image from gallery or capture with camera</string>
+    <string name="help_step2">2. Tap "Generate Depth Map" to process the image</string>
+    <string name="help_step3">3. View the generated depth map with enhanced detail</string>
+    <string name="help_note">Note: Processing may take a few seconds depending on image size and device performance.</string>
+
+    <!-- Toast messages -->
+    <string name="toast_image_loaded">Image loaded successfully</string>
+    <string name="toast_depth_map_generated">Depth map generated!</string>
+    <string name="toast_image_saved">Image saved to gallery</string>
+    <string name="toast_processing_started">Processing started...</string>
+    <!-- Download buttons -->
+    <string name="download_depth_map">Download Depth Map</string>
+    <string name="download_effect">Download Effect</string>
+
+    <!-- Controls -->
+    <string name="controls">Controls</string>
+    <string name="threshold">Threshold</string>
+    <string name="depth_scale">Depth Scale</string>
+    <string name="feather">Feather</string>
+    <string name="red_brightness">Red Brightness</string>
+    <string name="blue_brightness">Blue Brightness</string>
+    <string name="gamma">Gamma</string>
+    <string name="black_level">Black Level</string>
+    <string name="white_level">White Level</string>
+    <string name="smoothing">Smoothing</string>
+
+</resources>

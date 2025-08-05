@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude temporary files -->
+    <exclude domain="file" path="temp/"/>
+    <exclude domain="cache"/>
+    
+    <!-- Exclude sensitive data -->
+    <exclude domain="sharedpref" path="device_prefs.xml"/>
+    <exclude domain="database" path="temp_images.db"/>
+    
+    <!-- Include app preferences -->
+    <include domain="sharedpref" path="app_preferences.xml"/>
+</full-backup-content>

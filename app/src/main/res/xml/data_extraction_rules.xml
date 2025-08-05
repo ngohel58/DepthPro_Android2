@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Data not backed up by Auto Backup -->
+        <exclude domain="sharedpref" path="device_prefs.xml"/>
+        <exclude domain="database" path="temp_images.db"/>
+    </cloud-backup>
+    <device-transfer>
+        <!-- Data not transferred during device-to-device transfer -->
+        <exclude domain="sharedpref" path="device_prefs.xml"/>
+        <exclude domain="database" path="temp_images.db"/>
+    </device-transfer>
+</data-extraction-rules>
