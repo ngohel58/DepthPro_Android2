@@ -178,8 +178,10 @@ public class ChromostereopsisProcessor {
             double g = (double) ((pixel >> 8) & 0xFF);
             double b = (double) (pixel & 0xFF);
 
-            // Exact PIL luminance formula (ITU-R BT.601)
-            gray[i] = 0.299 * r + 0.587 * g + 0.114 * b;
+            // Exact PIL luminance formula (ITU-R BT.601) with rounding
+            // Pillow rounds to nearest integer when converting to "L"
+            double value = 0.299 * r + 0.587 * g + 0.114 * b;
+            gray[i] = Math.floor(value + 0.5); // match Pillow rounding
         }
 
         return gray;
