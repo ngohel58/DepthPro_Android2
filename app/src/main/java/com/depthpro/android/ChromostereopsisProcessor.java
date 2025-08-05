@@ -4,8 +4,19 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.Log;
 
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
 public class ChromostereopsisProcessor {
     private static final String TAG = "ChromostereopsisProcessor";
+
+    static {
+        if (!OpenCVLoader.initDebug()) {
+            Log.e(TAG, "OpenCV initialization failed");
+        }
+    }
 
     public static class EffectParams {
         public float threshold = 50f;
@@ -118,45 +129,34 @@ public class ChromostereopsisProcessor {
         }
 
         double sigma = Math.max(smoothingRadius * 10.0, 1.0);
-        int diameter = 5;
-        int radius = diameter / 2;
         int height = depthMap.length;
         int width = depthMap[0].length;
-        double[][] result = new double[height][width];
 
-        double twoSigmaSpace2 = 2.0 * sigma * sigma;
-        double twoSigmaColor2 = twoSigmaSpace2;
-
+        Mat depth8U = new Mat(height, width, CvType.CV_8UC1);
+        byte[] buffer = new byte[height * width];
+        int index = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                double center = depthMap[y][x] * 255.0;
-                double weightSum = 0.0;
-                double valueSum = 0.0;
-
-                for (int dy = -radius; dy <= radius; dy++) {
-                    int yy = Math.min(Math.max(y + dy, 0), height - 1);
-                    double spatialY = dy * dy;
-
-                    for (int dx = -radius; dx <= radius; dx++) {
-                        int xx = Math.min(Math.max(x + dx, 0), width - 1);
-                        double spatial = Math.exp(-(spatialY + dx * dx) / twoSigmaSpace2);
-
-                        double neighbor = depthMap[yy][xx] * 255.0;
-                        double range = Math.exp(-((neighbor - center) * (neighbor - center)) / twoSigmaColor2);
-
-                        double weight = spatial * range;
-                        weightSum += weight;
-                        valueSum += neighbor * weight;
-                    }
-                }
-
-                if (weightSum > 0.0) {
-                    result[y][x] = (valueSum / weightSum) / 255.0;
-                } else {
-                    result[y][x] = depthMap[y][x];
-                }
+                buffer[index++] = (byte) Math.round(depthMap[y][x] * 255.0);
             }
         }
+        depth8U.put(0, 0, buffer);
+
+        Mat filtered8U = new Mat();
+        Imgproc.bilateralFilter(depth8U, filtered8U, 5, sigma, sigma);
+
+        byte[] filteredBuffer = new byte[height * width];
+        filtered8U.get(0, 0, filteredBuffer);
+        double[][] result = new double[height][width];
+        index = 0;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                result[y][x] = (filteredBuffer[index++] & 0xFF) / 255.0;
+            }
+        }
+
+        depth8U.release();
+        filtered8U.release();
 
         return result;
     }
