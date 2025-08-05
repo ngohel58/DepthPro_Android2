@@ -37,14 +37,21 @@ public class DepthAnythingV2Processor {
     private final TensorUtils tensorUtils;
     private final DepthMapRenderer depthMapRenderer;
 
-    // Track original dimensions for post-processing
+    // Track preprocessing details for post-processing
     public static class PreprocessInfo {
         public final int originalWidth;
         public final int originalHeight;
+        public final float scale;
+        public final int cropX;
+        public final int cropY;
 
-        public PreprocessInfo(int originalWidth, int originalHeight) {
+        public PreprocessInfo(int originalWidth, int originalHeight,
+                               float scale, int cropX, int cropY) {
             this.originalWidth = originalWidth;
             this.originalHeight = originalHeight;
+            this.scale = scale;
+            this.cropX = cropX;
+            this.cropY = cropY;
         }
     }
 
@@ -218,9 +225,11 @@ public class DepthAnythingV2Processor {
         Bitmap finalBitmap = Bitmap.createBitmap(scaledBitmap, cropX, cropY, INPUT_WIDTH, INPUT_HEIGHT);
 
         // Create preprocessing info for later use
-        PreprocessInfo info = new PreprocessInfo(originalWidth, originalHeight);
+        PreprocessInfo info = new PreprocessInfo(
+                originalWidth, originalHeight, scale, cropX, cropY);
 
-        Log.d(TAG, String.format("Preprocessed (crop): %dx%d -> %dx%d (scale=%.3f, crop=%d,%d)",
+        Log.d(TAG, String.format(
+                "Preprocessed (crop): %dx%d -> %dx%d (scale=%.3f, crop=%d,%d)",
                 originalWidth, originalHeight, scaledWidth, scaledHeight, scale, cropX, cropY));
 
         return new PreprocessResult(finalBitmap, info);
@@ -279,8 +288,18 @@ public class DepthAnythingV2Processor {
             }
         }
 
-        // Resize to original dimensions using exact Python method
-        double[][] resizedDepth = resizeDepthMapPythonExact(rawDepthMap,
+        // Reconstruct full depth canvas from cropped patch
+        int scaledWidth = Math.round(preprocessInfo.originalWidth * preprocessInfo.scale);
+        int scaledHeight = Math.round(preprocessInfo.originalHeight * preprocessInfo.scale);
+        double[][] canvas = new double[scaledHeight][scaledWidth];
+
+        for (int h = 0; h < height; h++) {
+            System.arraycopy(rawDepthMap[h], 0,
+                    canvas[preprocessInfo.cropY + h], preprocessInfo.cropX, width);
+        }
+
+        // Resize canvas back to original dimensions using exact Python method
+        double[][] resizedDepth = resizeDepthMapPythonExact(canvas,
                 preprocessInfo.originalWidth,
                 preprocessInfo.originalHeight);
 

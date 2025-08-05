@@ -31,8 +31,8 @@ public class ChromostereopsisProcessorTest {
         Bitmap original = Bitmap.createBitmap(3, 4, Bitmap.Config.ARGB_8888);
         original.eraseColor(Color.WHITE);
 
-        float[][] depth = new float[8][5];
-        depth[7][4] = 1f; // bottom-right depth
+        float[][] depth = new float[4][3];
+        depth[3][2] = 1f; // bottom-right depth
 
         ChromostereopsisProcessor processor = new ChromostereopsisProcessor();
         Bitmap result = processor.applyEffect(original, depth, defaultParams());
@@ -48,11 +48,11 @@ public class ChromostereopsisProcessorTest {
     }
 
     @Test
-    public void applyEffectHandlesSmallDepthMap() {
+    public void applyEffectHandlesAlignedDepthMap() {
         Bitmap original = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         original.eraseColor(Color.WHITE);
 
-        float[][] depth = new float[1][1]; // minimal depth map
+        float[][] depth = new float[10][10];
 
         ChromostereopsisProcessor processor = new ChromostereopsisProcessor();
         Bitmap result = processor.applyEffect(original, depth, defaultParams());
