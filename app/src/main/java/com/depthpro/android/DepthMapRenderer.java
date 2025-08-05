@@ -38,7 +38,7 @@ public class DepthMapRenderer {
             for (int x = 0; x < targetWidth; x++) {
                 // Exact Python calculation: (depth * 255.0).astype(np.uint8)
                 double depthValue = depthDouble[y][x];
-                int grayValue = (int) Math.round(Math.max(0.0, Math.min(255.0, depthValue * 255.0)));
+                int grayValue = (int) Math.max(0.0, Math.min(255.0, depthValue * 255.0));
 
                 // Create grayscale pixel (mode="L" equivalent)
                 pixels[y * targetWidth + x] = Color.rgb(grayValue, grayValue, grayValue);
