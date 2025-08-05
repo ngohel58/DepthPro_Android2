@@ -189,7 +189,7 @@ public class ChromostereopsisProcessor {
         // Exact Python mapping: 0-100% -> 0-255
         double blackLevel = blackLevelPercent * 2.55;
         double whiteLevel = whiteLevelPercent * 2.55;
-        double denominator = Math.max(whiteLevel - blackLevel, 1e-10); // Python precision
+        double denominator = Math.max(whiteLevel - blackLevel, 1e-6); // Python precision
 
         for (int i = 0; i < gray.length; i++) {
             double adjustedValue = (gray[i] - blackLevel) / denominator;
