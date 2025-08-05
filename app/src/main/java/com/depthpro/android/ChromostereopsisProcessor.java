@@ -211,7 +211,7 @@ public class ChromostereopsisProcessor {
 
         // Exact Python parameter mapping
         double thresholdNorm = params.threshold / 100.0;
-        double steepness = Math.max(params.depthScale, 1e-10); // Avoid division by zero
+        double steepness = Math.max(params.depthScale, 1e-3); // Avoid division by zero
         double featherNorm = params.feather / 100.0;
         double steepnessAdjusted = steepness / (featherNorm * 10.0 + 1.0);
 
