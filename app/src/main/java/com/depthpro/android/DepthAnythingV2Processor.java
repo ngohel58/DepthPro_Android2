@@ -243,10 +243,10 @@ public class DepthAnythingV2Processor {
                 int g = (pixel >> 8) & 0xFF;
                 int b = pixel & 0xFF;
 
-                // Normalize using mean/std from Hugging Face
-                preprocessedImage[y][x][0] = ((r / 255.0f) - 0.45f) / 0.225f; // R
-                preprocessedImage[y][x][1] = ((g / 255.0f) - 0.45f) / 0.225f; // G
-                preprocessedImage[y][x][2] = ((b / 255.0f) - 0.45f) / 0.225f; // B
+                // Normalize using mean/std from Hugging Face preprocessor config
+                preprocessedImage[y][x][0] = ((r / 255.0f) - 0.485f) / 0.229f; // R
+                preprocessedImage[y][x][1] = ((g / 255.0f) - 0.456f) / 0.224f; // G
+                preprocessedImage[y][x][2] = ((b / 255.0f) - 0.406f) / 0.225f; // B
             }
         }
 
