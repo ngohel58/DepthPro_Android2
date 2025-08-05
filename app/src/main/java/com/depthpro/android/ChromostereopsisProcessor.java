@@ -202,7 +202,8 @@ public class ChromostereopsisProcessor {
         double gammaValue = 0.1 + (gammaPercent / 100.0) * 2.9;
 
         for (int i = 0; i < gray.length; i++) {
-            gray[i] = Math.pow(gray[i], gammaValue);
+            double value = Math.pow(gray[i], gammaValue);
+            gray[i] = Math.max(0.0, Math.min(1.0, value));
         }
     }
 
