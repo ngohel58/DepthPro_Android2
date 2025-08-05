@@ -74,6 +74,7 @@ dependencies {
     // Image processing
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    implementation 'org.opencv:opencv:4.9.0'
 
     // Mathematical operations
     implementation 'org.ejml:ejml-all:0.43.1'
