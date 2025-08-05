@@ -149,7 +149,6 @@ public class DepthAnythingV2Processor {
         }
 
         // Create input tensor
-        long[] inputShape = {1, CHANNELS, INPUT_HEIGHT, INPUT_WIDTH};
         OnnxTensor inputTensor = OnnxTensor.createTensor(ortEnvironment, tensorData);
 
         // Run inference
