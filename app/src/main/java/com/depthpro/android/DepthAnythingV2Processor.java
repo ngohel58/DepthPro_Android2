@@ -33,8 +33,6 @@ public class DepthAnythingV2Processor {
     private OrtEnvironment ortEnvironment;
     private OrtSession ortSession;
 
-    private final ImageUtils imageUtils;
-    private final TensorUtils tensorUtils;
     private final DepthMapRenderer depthMapRenderer;
 
     // Track preprocessing details for post-processing
@@ -57,8 +55,6 @@ public class DepthAnythingV2Processor {
 
     public DepthAnythingV2Processor(Context context) throws OrtException, IOException {
         this.context = context;
-        this.imageUtils = new ImageUtils();
-        this.tensorUtils = new TensorUtils();
         this.depthMapRenderer = new DepthMapRenderer();
 
         initializeModel();
