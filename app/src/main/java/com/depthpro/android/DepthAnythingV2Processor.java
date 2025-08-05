@@ -37,22 +37,14 @@ public class DepthAnythingV2Processor {
     private final TensorUtils tensorUtils;
     private final DepthMapRenderer depthMapRenderer;
 
-    // Track preprocessing info for proper aspect ratio handling
+    // Track original dimensions for post-processing
     public static class PreprocessInfo {
         public final int originalWidth;
         public final int originalHeight;
-        public final int cropX, cropY, cropWidth, cropHeight;
-        public final float scale;
 
-        public PreprocessInfo(int originalWidth, int originalHeight,
-                              int cropX, int cropY, int cropWidth, int cropHeight, float scale) {
+        public PreprocessInfo(int originalWidth, int originalHeight) {
             this.originalWidth = originalWidth;
             this.originalHeight = originalHeight;
-            this.cropX = cropX;
-            this.cropY = cropY;
-            this.cropWidth = cropWidth;
-            this.cropHeight = cropHeight;
-            this.scale = scale;
         }
     }
 
@@ -212,38 +204,24 @@ public class DepthAnythingV2Processor {
         int originalWidth = inputBitmap.getWidth();
         int originalHeight = inputBitmap.getHeight();
 
-        // Calculate scaling to fit the larger dimension to 518
-        float scale = Math.min((float) INPUT_WIDTH / originalWidth, (float) INPUT_HEIGHT / originalHeight);
-
-        // Calculate scaled dimensions
+        // Scale so that the shorter side equals 518
+        float scale = (float) INPUT_WIDTH / Math.min(originalWidth, originalHeight);
         int scaledWidth = Math.round(originalWidth * scale);
         int scaledHeight = Math.round(originalHeight * scale);
 
         // Scale the image
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(inputBitmap, scaledWidth, scaledHeight, true);
 
-        // Create 518x518 bitmap with centered image
-        Bitmap finalBitmap = Bitmap.createBitmap(INPUT_WIDTH, INPUT_HEIGHT, Bitmap.Config.ARGB_8888);
-        android.graphics.Canvas canvas = new android.graphics.Canvas(finalBitmap);
-
-        // Fill with black (or could be mean color)
-        canvas.drawColor(android.graphics.Color.BLACK);
-
-        // Center the scaled image
-        int offsetX = (INPUT_WIDTH - scaledWidth) / 2;
-        int offsetY = (INPUT_HEIGHT - scaledHeight) / 2;
-
-        canvas.drawBitmap(scaledBitmap, offsetX, offsetY, null);
+        // Center-crop to 518x518
+        int cropX = (scaledWidth - INPUT_WIDTH) / 2;
+        int cropY = (scaledHeight - INPUT_HEIGHT) / 2;
+        Bitmap finalBitmap = Bitmap.createBitmap(scaledBitmap, cropX, cropY, INPUT_WIDTH, INPUT_HEIGHT);
 
         // Create preprocessing info for later use
-        PreprocessInfo info = new PreprocessInfo(
-                originalWidth, originalHeight,
-                offsetX, offsetY, scaledWidth, scaledHeight,
-                scale
-        );
+        PreprocessInfo info = new PreprocessInfo(originalWidth, originalHeight);
 
-        Log.d(TAG, String.format("Preprocessed: %dx%d -> %dx%d (scale=%.3f, offset=%d,%d)",
-                originalWidth, originalHeight, scaledWidth, scaledHeight, scale, offsetX, offsetY));
+        Log.d(TAG, String.format("Preprocessed (crop): %dx%d -> %dx%d (scale=%.3f, crop=%d,%d)",
+                originalWidth, originalHeight, scaledWidth, scaledHeight, scale, cropX, cropY));
 
         return new PreprocessResult(finalBitmap, info);
     }
@@ -265,10 +243,10 @@ public class DepthAnythingV2Processor {
                 int g = (pixel >> 8) & 0xFF;
                 int b = pixel & 0xFF;
 
-                // Normalize to [0, 1] then shift by -0.45 (Depth Anything V2 preprocessing)
-                preprocessedImage[y][x][0] = (r / 255.0f) - 0.45f; // R
-                preprocessedImage[y][x][1] = (g / 255.0f) - 0.45f; // G
-                preprocessedImage[y][x][2] = (b / 255.0f) - 0.45f; // B
+                // Normalize using mean/std from Hugging Face
+                preprocessedImage[y][x][0] = ((r / 255.0f) - 0.45f) / 0.225f; // R
+                preprocessedImage[y][x][1] = ((g / 255.0f) - 0.45f) / 0.225f; // G
+                preprocessedImage[y][x][2] = ((b / 255.0f) - 0.45f) / 0.225f; // B
             }
         }
 
@@ -301,20 +279,8 @@ public class DepthAnythingV2Processor {
             }
         }
 
-        // Crop the relevant part (remove padding) - keep as double precision
-        double[][] croppedDepth = new double[preprocessInfo.cropHeight][preprocessInfo.cropWidth];
-        for (int y = 0; y < preprocessInfo.cropHeight; y++) {
-            for (int x = 0; x < preprocessInfo.cropWidth; x++) {
-                int srcY = y + preprocessInfo.cropY;
-                int srcX = x + preprocessInfo.cropX;
-                if (srcY < height && srcX < width) {
-                    croppedDepth[y][x] = rawDepthMap[srcY][srcX];
-                }
-            }
-        }
-
         // Resize to original dimensions using exact Python method
-        double[][] resizedDepth = resizeDepthMapPythonExact(croppedDepth,
+        double[][] resizedDepth = resizeDepthMapPythonExact(rawDepthMap,
                 preprocessInfo.originalWidth,
                 preprocessInfo.originalHeight);
 

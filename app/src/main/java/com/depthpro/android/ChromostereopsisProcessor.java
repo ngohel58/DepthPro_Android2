@@ -29,9 +29,8 @@ public class ChromostereopsisProcessor {
         double[][] depthMapDouble = convertToDouble(depthMap);
         double[][] resizedDepth = resizeDepthMapPythonExact(depthMapDouble, originalWidth, originalHeight);
 
-        // Apply smoothing exactly like Python (bypassed for now)
-        // double[][] smoothedDepth = applyPythonSmoothing(resizedDepth, params.smoothing);
-        double[][] smoothedDepth = resizedDepth;
+        // Apply smoothing exactly like Python bilateral filter
+        double[][] smoothedDepth = applyPythonSmoothing(resizedDepth, params.smoothing);
 
         // Convert original to grayscale exactly like Python PIL
         double[] grayDouble = convertToGrayscalePythonExact(original);
@@ -112,6 +111,56 @@ public class ChromostereopsisProcessor {
                 v22 * dx * dy;
     }
 
+    private double[][] applyPythonSmoothing(double[][] depthMap, float smoothingPercent) {
+        double smoothingRadius = smoothingPercent / 10.0;
+        if (smoothingRadius <= 0.0) {
+            return depthMap;
+        }
+
+        double sigma = Math.max(smoothingRadius * 10.0, 1.0);
+        int diameter = 5;
+        int radius = diameter / 2;
+        int height = depthMap.length;
+        int width = depthMap[0].length;
+        double[][] result = new double[height][width];
+
+        double twoSigmaSpace2 = 2.0 * sigma * sigma;
+        double twoSigmaColor2 = twoSigmaSpace2;
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                double center = depthMap[y][x] * 255.0;
+                double weightSum = 0.0;
+                double valueSum = 0.0;
+
+                for (int dy = -radius; dy <= radius; dy++) {
+                    int yy = Math.min(Math.max(y + dy, 0), height - 1);
+                    double spatialY = dy * dy;
+
+                    for (int dx = -radius; dx <= radius; dx++) {
+                        int xx = Math.min(Math.max(x + dx, 0), width - 1);
+                        double spatial = Math.exp(-(spatialY + dx * dx) / twoSigmaSpace2);
+
+                        double neighbor = depthMap[yy][xx] * 255.0;
+                        double range = Math.exp(-((neighbor - center) * (neighbor - center)) / twoSigmaColor2);
+
+                        double weight = spatial * range;
+                        weightSum += weight;
+                        valueSum += neighbor * weight;
+                    }
+                }
+
+                if (weightSum > 0.0) {
+                    result[y][x] = (valueSum / weightSum) / 255.0;
+                } else {
+                    result[y][x] = depthMap[y][x];
+                }
+            }
+        }
+
+        return result;
+    }
+
     private double[] convertToGrayscalePythonExact(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -188,9 +237,9 @@ public class ChromostereopsisProcessor {
                 double redOutput = redFactor * grayValue * blend;
                 double blueOutput = blueFactor * grayValue * (1.0 - blend);
 
-                // Convert to integer with exact Python rounding
-                int redInt = (int) Math.round(Math.max(0.0, Math.min(255.0, redOutput * 255.0)));
-                int blueInt = (int) Math.round(Math.max(0.0, Math.min(255.0, blueOutput * 255.0)));
+                // Convert to integer with Python's truncation behavior
+                int redInt = (int) Math.max(0.0, Math.min(255.0, redOutput * 255.0));
+                int blueInt = (int) Math.max(0.0, Math.min(255.0, blueOutput * 255.0));
 
                 outputPixels[pixelIndex] = Color.rgb(redInt, 0, blueInt);
             }
@@ -213,8 +262,8 @@ public class ChromostereopsisProcessor {
         for (int y = 0; y < targetHeight; y++) {
             for (int x = 0; x < targetWidth; x++) {
                 int pixelIndex = y * targetWidth + x;
-                // Exact Python grayscale conversion
-                int grayValue = (int) Math.round(Math.max(0.0, Math.min(255.0, resizedDepth[y][x] * 255.0)));
+                // Exact Python grayscale conversion with truncation
+                int grayValue = (int) Math.max(0.0, Math.min(255.0, resizedDepth[y][x] * 255.0));
                 pixels[pixelIndex] = Color.rgb(grayValue, grayValue, grayValue);
             }
         }
