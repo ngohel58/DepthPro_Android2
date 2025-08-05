@@ -146,49 +146,45 @@ public class DepthAnythingV2Processor {
             }
         }
 
-        // Create input tensor
-        long[] inputShape = {1, CHANNELS, INPUT_HEIGHT, INPUT_WIDTH};
-        OnnxTensor inputTensor = OnnxTensor.createTensor(ortEnvironment, tensorData);
+        float[][] depthMap;
+        Bitmap depthMapBitmap;
 
-        // Run inference
-        Map<String, OnnxTensor> inputs = Collections.singletonMap(INPUT_NAME, inputTensor);
-        OrtSession.Result result = ortSession.run(inputs);
+        try (OnnxTensor inputTensor = OnnxTensor.createTensor(ortEnvironment, tensorData);
+             OrtSession.Result result = ortSession.run(Collections.singletonMap(INPUT_NAME, inputTensor))) {
 
-        // Extract depth output
-        OnnxTensor depthTensor = null;
-        String[] possibleNames = {"depth", "output", "logits", "predicted_depth"};
-        for (String name : possibleNames) {
-            depthTensor = (OnnxTensor) result.get(name).orElse(null);
-            if (depthTensor != null) {
-                Log.d(TAG, "Found output with name: " + name);
-                break;
+            OnnxTensor foundDepthTensor = null;
+            String[] possibleNames = {"depth", "output", "logits", "predicted_depth"};
+            for (String name : possibleNames) {
+                foundDepthTensor = (OnnxTensor) result.get(name).orElse(null);
+                if (foundDepthTensor != null) {
+                    Log.d(TAG, "Found output with name: " + name);
+                    break;
+                }
+            }
+
+            if (foundDepthTensor == null && result.size() > 0) {
+                String firstOutputName = result.iterator().next().getKey();
+                foundDepthTensor = (OnnxTensor) result.get(firstOutputName).orElse(null);
+                Log.d(TAG, "Using first output: " + firstOutputName);
+            }
+
+            if (foundDepthTensor == null) {
+                StringBuilder availableOutputs = new StringBuilder("Available outputs: ");
+                for (Map.Entry<String, ?> entry : result) {
+                    availableOutputs.append(entry.getKey()).append(" ");
+                }
+                Log.e(TAG, availableOutputs.toString());
+                throw new RuntimeException("No depth output found. Available: " + availableOutputs.toString());
+            }
+
+            try (OnnxTensor depthTensor = foundDepthTensor) {
+                // Process depth map with Python-exact processing
+                depthMap = extractAndResizeDepthMapPythonExact(depthTensor, preprocessInfo);
+
+                // Generate depth map bitmap using Python-exact rendering
+                depthMapBitmap = depthMapRenderer.renderDepthMapPythonExact(depthMap, inputBitmap.getWidth(), inputBitmap.getHeight());
             }
         }
-
-        if (depthTensor == null && result.size() > 0) {
-            String firstOutputName = result.iterator().next().getKey();
-            depthTensor = (OnnxTensor) result.get(firstOutputName).orElse(null);
-            Log.d(TAG, "Using first output: " + firstOutputName);
-        }
-
-        if (depthTensor == null) {
-            StringBuilder availableOutputs = new StringBuilder("Available outputs: ");
-            for (Map.Entry<String, ?> entry : result) {
-                availableOutputs.append(entry.getKey()).append(" ");
-            }
-            Log.e(TAG, availableOutputs.toString());
-            throw new RuntimeException("No depth output found. Available: " + availableOutputs.toString());
-        }
-
-        // Process depth map with Python-exact processing
-        float[][] depthMap = extractAndResizeDepthMapPythonExact(depthTensor, preprocessInfo);
-
-        // Generate depth map bitmap using Python-exact rendering
-        Bitmap depthMapBitmap = depthMapRenderer.renderDepthMapPythonExact(depthMap, inputBitmap.getWidth(), inputBitmap.getHeight());
-
-        // Cleanup
-        inputTensor.close();
-        result.close();
 
         Log.d(TAG, "Depth estimation completed");
 
